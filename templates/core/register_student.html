@@ -1,0 +1,98 @@
+<!-- templates/core/register_student.html -->
+{% extends 'core/base.html' %}
+
+{% block title %}Student Registration - MentalPal{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="card shadow-sm border-0">
+                <div class="card-body p-4">
+                    <h2 class="text-center text-purple mb-4">Create Student Account</h2>
+                    <p class="text-center text-muted mb-4">Join MentalPal to connect with mental health mentors</p>
+                    
+                    <form method="post">
+                        {% csrf_token %}
+                        
+                        <div class="mb-3">
+                            <label for="id_username" class="form-label">Username</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-user"></i></span>
+                                <input type="text" name="username" id="id_username" class="form-control" required>
+                            </div>
+                            {% if form.username.errors %}
+                                <div class="text-danger small mt-1">{{ form.username.errors }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="id_email" class="form-label">Email</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-envelope"></i></span>
+                                <input type="email" name="email" id="id_email" class="form-control" required>
+                            </div>
+                            {% if form.email.errors %}
+                                <div class="text-danger small mt-1">{{ form.email.errors }}</div>
+                            {% endif %}
+                            <div class="text-muted small mt-1">We'll send a verification link to this email</div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="id_education_level" class="form-label">Education Level</label>
+                            <select name="education_level" id="id_education_level" class="form-select" required>
+                                <option value="" selected disabled>Select your education level</option>
+                                <option value="high_school">High School</option>
+                                <option value="college">College</option>
+                                <option value="university">University</option>
+                                <option value="other">Other</option>
+                            </select>
+                            {% if form.education_level.errors %}
+                                <div class="text-danger small mt-1">{{ form.education_level.errors }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="id_password1" class="form-label">Password</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-lock"></i></span>
+                                <input type="password" name="password1" id="id_password1" class="form-control" required>
+                            </div>
+                            {% if form.password1.errors %}
+                                <div class="text-danger small mt-1">{{ form.password1.errors }}</div>
+                            {% endif %}
+                            <div class="text-muted small mt-1">Must be at least 8 characters</div>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label for="id_password2" class="form-label">Confirm Password</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-lock"></i></span>
+                                <input type="password" name="password2" id="id_password2" class="form-control" required>
+                            </div>
+                            {% if form.password2.errors %}
+                                <div class="text-danger small mt-1">{{ form.password2.errors }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="mb-4 form-check">
+                            <input type="checkbox" class="form-check-input" id="terms" required>
+                            <label class="form-check-label" for="terms">
+                                I agree to the <a href="#" class="text-purple">Terms of Service</a> and <a href="#" class="text-purple">Privacy Policy</a>
+                            </label>
+                        </div>
+                        
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-purple">Create Account</button>
+                        </div>
+                    </form>
+                    
+                    <div class="text-center mt-4">
+                        <p class="mb-0">Already have an account? <a href="{% url 'login' %}" class="text-decoration-none text-purple">Log in</a></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

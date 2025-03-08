@@ -1,0 +1,188 @@
+<!-- templates/core/home.html -->
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}MentalPal - Mental Health Support Platform{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="py-5 text-center container animate__animated animate__fadeIn">
+    <div class="row py-lg-5">
+        <div class="col-lg-8 col-md-10 mx-auto">
+            <h1 class="fw-bold text-purple">Welcome to <span class="text-primary">MentalPal</span></h1>
+            <p class="lead text-muted">A safe space connecting students with trained mentors for mental health support</p>
+            <div class="d-flex justify-content-center gap-2 mt-4">
+                <a href="{% url 'register_student' %}" class="btn btn-purple btn-lg px-4">I'm a Student</a>
+                <a href="{% url 'register_mentor' %}" class="btn btn-outline-primary btn-lg px-4">I'm a Mentor</a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Features Section -->
+<div class="container my-5">
+    <h2 class="text-center mb-5">How MentalPal Supports Your Journey</h2>
+    
+    <div class="row g-4">
+        <div class="col-md-4">
+            <div class="card h-100 shadow-sm animate__animated animate__fadeIn">
+                <div class="card-body text-center">
+                    <div class="rounded-circle bg-primary bg-opacity-10 p-3 d-inline-flex mb-3">
+                        <i class="fas fa-users fs-3 text-primary"></i>
+                    </div>
+                    <h3 class="card-title h5 text-primary">Personalized Mentorship</h3>
+                    <p class="card-text">Connect with trained mentors who understand your unique challenges and provide tailored guidance.</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card h-100 shadow-sm animate__animated animate__fadeIn" style="animation-delay: 0.2s">
+                <div class="card-body text-center">
+                    <div class="rounded-circle bg-success bg-opacity-10 p-3 d-inline-flex mb-3">
+                        <i class="fas fa-shield-alt fs-3 text-success"></i>
+                    </div>
+                    <h3 class="card-title h5 text-success">Safe Environment</h3>
+                    <p class="card-text">Express yourself freely in our secure, anonymous, and non-judgmental platform.</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card h-100 shadow-sm animate__animated animate__fadeIn" style="animation-delay: 0.4s">
+                <div class="card-body text-center">
+                    <div class="rounded-circle bg-info bg-opacity-10 p-3 d-inline-flex mb-3">
+                        <i class="fas fa-book fs-3 text-info"></i>
+                    </div>
+                    <h3 class="card-title h5 text-info">Expert Resources</h3>
+                    <p class="card-text">Access a comprehensive library of mental health resources and FAQs curated by professionals.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- How It Works Section -->
+<div class="container-fluid bg-light py-5">
+    <div class="container">
+        <h2 class="text-center mb-5">How MentalPal Works</h2>
+        
+        <div class="row g-4">
+            <div class="col-md-3">
+                <div class="text-center">
+                    <div class="bg-purple rounded-circle text-white d-inline-flex justify-content-center align-items-center mb-3" style="width: 60px; height: 60px;">
+                        <span class="fw-bold">1</span>
+                    </div>
+                    <h3 class="h5">Sign Up</h3>
+                    <p>Create an account as a student or mentor and verify your email.</p>
+                </div>
+            </div>
+            
+            <div class="col-md-3">
+                <div class="text-center">
+                    <div class="bg-primary rounded-circle text-white d-inline-flex justify-content-center align-items-center mb-3" style="width: 60px; height: 60px;">
+                        <span class="fw-bold">2</span>
+                    </div>
+                    <h3 class="h5">Browse Mentors</h3>
+                    <p>Explore profiles of verified mentors with expertise in various areas.</p>
+                </div>
+            </div>
+            
+            <div class="col-md-3">
+                <div class="text-center">
+                    <div class="bg-success rounded-circle text-white d-inline-flex justify-content-center align-items-center mb-3" style="width: 60px; height: 60px;">
+                        <span class="fw-bold">3</span>
+                    </div>
+                    <h3 class="h5">Connect</h3>
+                    <p>Select a mentor and establish a supportive mentorship relationship.</p>
+                </div>
+            </div>
+            
+            <div class="col-md-3">
+                <div class="text-center">
+                    <div class="bg-info rounded-circle text-white d-inline-flex justify-content-center align-items-center mb-3" style="width: 60px; height: 60px;">
+                        <span class="fw-bold">4</span>
+                    </div>
+                    <h3 class="h5">Grow Together</h3>
+                    <p>Receive personalized guidance and support on your mental health journey.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Testimonials Section -->
+<div class="container my-5">
+    <h2 class="text-center mb-5">Student Experiences</h2>
+    
+    <div class="row g-4">
+        <div class="col-md-4">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body">
+                    <div class="mb-2">
+                        <i class="fas fa-star text-warning"></i>
+                        <i class="fas fa-star text-warning"></i>
+                        <i class="fas fa-star text-warning"></i>
+                        <i class="fas fa-star text-warning"></i>
+                        <i class="fas fa-star text-warning"></i>
+                    </div>
+                    <h3 class="card-title h5">"Life-changing support"</h3>
+                    <p class="card-text">
+                        "My mentor helped me navigate through a difficult semester. The personalized guidance made all the difference in my mental health journey."
+                    </p>
+                    <p class="text-muted small">- Alex, University Student</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body">
+                    <div class="mb-2">
+                        <i class="fas fa-star text-warning"></i>
+                        <i class="fas fa-star text-warning"></i>
+                        <i class="fas fa-star text-warning"></i>
+                        <i class="fas fa-star text-warning"></i>
+                        <i class="fas fa-star text-warning"></i>
+                    </div>
+                    <h3 class="card-title h5">"Safe space to open up"</h3>
+                    <p class="card-text">
+                        "I never felt judged on MentalPal. The anonymous environment helped me express my feelings and work through my anxiety."
+                    </p>
+                    <p class="text-muted small">- Jamie, High School Student</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body">
+                    <div class="mb-2">
+                        <i class="fas fa-star text-warning"></i>
+                        <i class="fas fa-star text-warning"></i>
+                        <i class="fas fa-star text-warning"></i>
+                        <i class="fas fa-star text-warning"></i>
+                        <i class="fas fa-star text-warning"></i>
+                    </div>
+                    <h3 class="card-title h5">"Expert resources"</h3>
+                    <p class="card-text">
+                        "The FAQ section answered many of my initial questions, and my mentor provided additional resources tailored to my specific situation."
+                    </p>
+                    <p class="text-muted small">- Taylor, College Student</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- CTA Section -->
+<div class="container-fluid bg-purple bg-opacity-10 py-5">
+    <div class="container text-center">
+        <h2 class="mb-4">Ready to Start Your Mental Health Journey?</h2>
+        <p class="lead mb-4">Join MentalPal today and connect with mentors who care about your wellbeing.</p>
+        <div class="d-flex justify-content-center gap-3">
+            <a href="{% url 'register_student' %}" class="btn btn-purple btn-lg">Sign Up Now</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

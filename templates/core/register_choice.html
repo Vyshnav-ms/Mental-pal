@@ -1,0 +1,54 @@
+<!-- templates/core/register_choice.html -->
+{% extends 'core/base.html' %}
+
+{% block title %}Sign Up - MentalPal{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <h2 class="text-center text-purple mb-5">Join MentalPal</h2>
+            
+            <div class="row g-4">
+                <div class="col-md-6">
+                    <div class="card h-100 shadow-sm hover-card">
+                        <div class="card-body text-center p-4">
+                            <div class="rounded-circle bg-purple bg-opacity-10 p-3 d-inline-flex mb-3">
+                                <i class="fas fa-user-graduate fs-3 text-purple"></i>
+                            </div>
+                            <h3 class="card-title h4 text-purple">I'm a Student</h3>
+                            <p class="card-text mb-4">
+                                Sign up as a student to connect with mental health mentors and access support resources.
+                            </p>
+                            <a href="{% url 'register_student' %}" class="btn btn-purple w-100">
+                                Create Student Account
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-6">
+                    <div class="card h-100 shadow-sm hover-card">
+                        <div class="card-body text-center p-4">
+                            <div class="rounded-circle bg-primary bg-opacity-10 p-3 d-inline-flex mb-3">
+                                <i class="fas fa-user-tie fs-3 text-primary"></i>
+                            </div>
+                            <h3 class="card-title h4 text-primary">I'm a Mentor</h3>
+                            <p class="card-text mb-4">
+                                Sign up as a mentor to provide mental health support and guidance to students.
+                            </p>
+                            <a href="{% url 'register_mentor' %}" class="btn btn-primary w-100">
+                                Create Mentor Account
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="text-center mt-4">
+                <p>Already have an account? <a href="{% url 'login' %}" class="text-decoration-none text-purple">Log in</a></p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

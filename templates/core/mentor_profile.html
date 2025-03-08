@@ -1,0 +1,81 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}{{ mentor.username }}'s Profile - MentalPal{% endblock %}
+
+{% block content %}
+<section class="py-5 container">
+    <div class="row justify-content-center">
+        <div class="col-lg-8 col-md-10">
+            <h1 class="fw-bold text-center mb-4 text-purple animate__animated animate__fadeIn">
+                {{ mentor.username }}'s Profile
+            </h1>
+
+            <!-- Mentor Details -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-body">
+                    <h2 class="h4 text-primary mb-3">About {{ mentor.username }}</h2>
+                    <p><strong>Expertise:</strong> {{ mentor_profile.expertise }}</p>
+                    <p><strong>Bio:</strong> {{ mentor_profile.bio }}</p>
+                    <p><strong>Gender:</strong> {{ mentor_profile.get_gender_display }}</p>
+                    <p><strong>Average Rating:</strong> 
+                        {% if mentor_profile.average_rating %}
+                            {{ mentor_profile.average_rating|floatformat:1 }}/5
+                        {% else %}
+                            No ratings yet
+                        {% endif %}
+                    </p>
+
+                    {% if request.user.is_student and not has_mentorship %}
+                        <a href="{% url 'select_mentor' mentor_id=mentor.id %}" class="btn btn-primary mt-3">
+                            Select as Mentor
+                        </a>
+                    {% elif request.user.is_student and has_mentorship %}
+                        <p class="text-success mt-3">You are currently mentored by {{ mentor.username }}.</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Reviews Section -->
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h2 class="h4 text-primary mb-3">Reviews</h2>
+                    {% if reviews %}
+                        {% for review in reviews %}
+                            <div class="border-bottom py-3">
+                                <p><strong>Rating:</strong> {{ review.rating }}/5</p>
+                                <p>{{ review.comment }}</p>
+                                <small class="text-muted">
+                                    By {{ review.student.username }} on {{ review.created_at|date:"F j, Y" }}
+                                </small>
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        <p class="text-muted">No reviews yet.</p>
+                    {% endif %}
+
+                    {% if request.user.is_student and has_mentorship and not has_reviewed %}
+                        <a href="{% url 'submit_review' mentor_id=mentor.id %}" class="btn btn-outline-primary mt-3">
+                            Write a Review
+                        </a>
+                    {% elif request.user.is_student and has_reviewed %}
+                        <p class="text-muted mt-3">You’ve already reviewed this mentor.</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            {% if request.user.is_student and has_mentorship %}
+                {% for mentorship in mentor.mentor_mentorships.all %}
+                    {% if mentorship.student == request.user and mentorship.active %}
+                        <div class="text-center mt-4">
+                            <a href="{% url 'end_mentorship' mentorship_id=mentorship.id %}" class="btn btn-danger">
+                                End Mentorship
+                            </a>
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            {% endif %}
+        </div>
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,59 @@
+<!-- templates/core/faq.html -->
+{% extends 'core/base.html' %}
+
+{% block title %}FAQs - MentalPal{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <h1 class="text-center text-purple mb-2">Frequently Asked Questions</h1>
+    <p class="text-center text-muted mb-5">Find answers to common questions about MentalPal and how our platform works.</p>
+    
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            {% if categories %}
+                <div class="accordion" id="faqAccordion">
+                    {% for category, faqs in categories.items %}
+                        <div class="mb-4">
+                            <h2 class="h4 text-primary mb-3">{{ category }}</h2>
+                            
+                            {% for faq in faqs %}
+                                <div class="card shadow-sm mb-3 faq-item">
+                                    <div class="card-header bg-white py-3 faq-header" id="heading{{ faq.id }}">
+                                        <h3 class="mb-0 h6">
+                                            <button class="btn btn-link text-decoration-none text-dark w-100 text-start d-flex justify-content-between align-items-center collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{ faq.id }}">
+                                                {{ faq.question }}
+                                                <i class="fas fa-chevron-down toggle-icon"></i>
+                                            </button>
+                                        </h3>
+                                    </div>
+                                    
+                                    <div id="collapse{{ faq.id }}" class="collapse faq-content" data-bs-parent="#faqAccordion">
+                                        <div class="card-body">
+                                            <p class="mb-0">{{ faq.answer }}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="text-center py-5">
+                    <p class="text-muted">No FAQs available at the moment.</p>
+                </div>
+            {% endif %}
+            
+            <!-- Still Have Questions -->
+            <div class="card shadow-sm mt-5 text-center">
+                <div class="card-body p-4">
+                    <h2 class="h4 text-purple mb-3">Still Have Questions?</h2>
+                    <p class="text-muted mb-4">
+                        If you couldn't find the answer you were looking for, our support team is here to help.
+                    </p>
+                    <a href="#" class="btn btn-purple">Contact Support</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

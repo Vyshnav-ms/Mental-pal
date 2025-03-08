@@ -1,0 +1,108 @@
+<!-- templates/core/browse_mentors.html -->
+{% extends 'core/base.html' %}
+
+{% block title %}Browse Mentors - MentalPal{% endblock %}
+
+
+{% block content %}
+<div class="container py-5">
+    <h1 class="text-center text-purple mb-2">Find Your Mental Health Mentor</h1>
+    <p class="text-center text-muted mb-5">Browse our community of verified mentors and find someone who understands your unique challenges.</p>
+    
+    <!-- Filter Form -->
+    <div class="card shadow-sm mb-5">
+        <div class="card-body p-4">
+            <form method="get" class="row g-3">
+                <div class="col-md-4">
+                    <label for="id_expertise" class="form-label">Expertise</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="fas fa-search"></i></span>
+                        {{ form.expertise }}
+                    </div>
+                </div>
+                
+                <div class="col-md-3">
+                    <label for="id_gender" class="form-label">Gender</label>
+                    {{ form.gender }}
+                </div>
+                
+                <div class="col-md-3">
+                    <label for="id_min_rating" class="form-label">Minimum Rating</label>
+                    {{ form.min_rating }}
+                </div>
+                
+                <div class="col-md-2 d-flex align-items-end">
+                    <button type="submit" class="btn btn-purple w-100">Filter</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Mentors Grid -->
+    <div class="row g-4">
+        {% if mentors %}
+            {% for mentor_profile in mentors %}
+                <div class="col-md-6 col-lg-4">
+                    <div class="card h-100 shadow-sm mentor-card">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center mb-3">
+                                <div class="flex-shrink-0">
+                                    <div class="bg-primary bg-opacity-10 rounded-circle p-3">
+                                        <i class="fas fa-user-tie fs-4 text-primary"></i>
+                                    </div>
+                                </div>
+                                <div class="flex-grow-1 ms-3">
+                                    <h3 class="card-title h5 mb-0">{{ mentor_profile.user.username }}</h3>
+                                    <p class="text-primary mb-0">{{ mentor_profile.expertise }}</p>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <div class="d-flex align-items-center mb-1">
+                                    <div class="me-2">
+                                        {% with avg_rating=mentor_profile.average_rating %}
+                                            <span class="fw-bold">{{ avg_rating|floatformat:1 }}</span>
+                                            <span class="text-warning">
+                                                {% for i in "12345" %}
+                                                    {% if forloop.counter <= avg_rating|add:"0.5"|floatformat:"0" %}
+                                                        <i class="fas fa-star"></i>
+                                                    {% else %}
+                                                        <i class="far fa-star"></i>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            </span>
+                                        {% endwith %}
+                                    </div>
+                                    <span class="text-muted small">({{ mentor_profile.review_count }} reviews)</span>
+                                </div>
+                                <div class="small">
+                                    <span class="badge bg-light text-dark me-1">
+                                        <i class="fas {% if mentor_profile.gender == 'M' %}fa-mars{% elif mentor_profile.gender == 'F' %}fa-venus{% else %}fa-genderless{% endif %} me-1"></i>
+                                        {{ mentor_profile.get_gender_display }}
+                                    </span>
+                                </div>
+                            </div>
+                            
+                            <p class="card-text">{{ mentor_profile.bio|truncatechars:150 }}</p>
+                            
+                            <div class="d-grid gap-2">
+                                <a href="{% url 'mentor_profile' mentor_profile.user.id %}" class="btn btn-outline-primary">View Profile</a>
+                                <a href="{% url 'select_mentor' mentor_profile.user.id %}" class="btn btn-purple">Connect</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <div class="col-12 text-center py-5">
+                <div class="mb-4">
+                    <i class="fas fa-search fa-3x text-muted"></i>
+                </div>
+                <h3 class="h4 text-muted">No mentors found</h3>
+                <p class="text-muted">Try adjusting your filters to find mentors.</p>
+                <a href="{% url 'browse_mentors' %}" class="btn btn-outline-purple mt-2">Clear Filters</a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

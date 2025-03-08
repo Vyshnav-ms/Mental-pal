@@ -1,0 +1,87 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}Mentor Dashboard - MentalPal{% endblock %}
+
+{% block content %}
+<section class="py-5 container">
+    <div class="row justify-content-center">
+        <div class="col-lg-10 col-md-12">
+            <h1 class="fw-bold text-center mb-4 text-purple animate__animated animate__fadeIn">
+                Welcome, {{ request.user.username }}!
+            </h1>
+            <p class="text-center text-muted mb-5">Your Mentor Dashboard</p>
+
+            <!-- Mentorships Section -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-body">
+                    <h2 class="h4 text-primary mb-3">Active Mentorships</h2>
+                    {% if mentorships %}
+                        <ul class="list-group list-group-flush">
+                            {% for mentorship in mentorships %}
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <strong>Student:</strong> {{ mentorship.student.username }} <br>
+                                        <small>Started: {{ mentorship.created_at|date:"F j, Y" }}</small>
+                                    </div>
+                                    <a href="{% url 'end_mentorship' mentorship_id=mentorship.id %}" class="btn btn-danger btn-sm">
+                                        End Mentorship
+                                    </a>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <p class="text-muted">You currently have no active mentorships.</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Reviews Section -->
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h2 class="h4 text-primary mb-3">Your Reviews</h2>
+                    {% if reviews %}
+                        {% for review in reviews %}
+                            <div class="border-bottom py-3">
+                                <p><strong>Rating:</strong> {{ review.rating }}/5</p>
+                                <p>{{ review.comment }}</p>
+                                <small class="text-muted">
+                                    By {{ review.student.username }} on {{ review.created_at|date:"F j, Y" }}
+                                </small>
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        <p class="text-muted">You have no reviews yet.</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Quick Stats -->
+            <div class="row g-4 mt-4">
+                <div class="col-md-6">
+                    <div class="card shadow-sm text-center">
+                        <div class="card-body">
+                            <h3 class="h5 text-primary">Total Mentees</h3>
+                            <p class="display-6">{{ mentorships.count }}</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card shadow-sm text-center">
+                        <div class="card-body">
+                            <h3 class="h5 text-primary">Average Rating</h3>
+                            <p class="display-6">
+                                {% if reviews %}
+                                    {{ reviews.aggregate(Avg('rating')).rating__avg|floatformat:1 }}/5
+                                {% else %}
+                                    N/A
+                                {% endif %}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

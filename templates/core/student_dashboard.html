@@ -1,0 +1,155 @@
+<!-- templates/core/student_dashboard.html -->
+{% extends 'core/base.html' %}
+
+{% block title %}Student Dashboard - MentalPal{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <h1 class="text-purple mb-4">Welcome, {{ user.username }}!</h1>
+    
+    <!-- Dashboard Overview -->
+    <div class="row g-4 mb-5">
+        <div class="col-md-4">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="rounded-circle bg-primary bg-opacity-10 p-3 me-3">
+                            <i class="fas fa-users fs-4 text-primary"></i>
+                        </div>
+                        <h2 class="h5 mb-0">My Mentors</h2>
+                    </div>
+                    <p class="text-muted">Connect with mentors who can provide personalized guidance.</p>
+                    <a href="{% url 'browse_mentors' %}" class="btn btn-sm btn-outline-primary">Find Mentors</a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="rounded-circle bg-success bg-opacity-10 p-3 me-3">
+                            <i class="fas fa-book fs-4 text-success"></i>
+                        </div>
+                        <h2 class="h5 mb-0">Resources</h2>
+                    </div>
+                    <p class="text-muted">Access mental health resources and frequently asked questions.</p>
+                    <a href="{% url 'faq' %}" class="btn btn-sm btn-outline-success">View FAQs</a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="rounded-circle bg-info bg-opacity-10 p-3 me-3">
+                            <i class="fas fa-user-cog fs-4 text-info"></i>
+                        </div>
+                        <h2 class="h5 mb-0">My Profile</h2>
+                    </div>
+                    <p class="text-muted">Update your personal information and preferences.</p>
+                    <a href="#" class="btn btn-sm btn-outline-info">Edit Profile</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- My Mentors Section -->
+    <h2 class="h4 text-purple mb-4">My Mentors</h2>
+    
+    {% if mentorships %}
+        <div class="row g-4">
+            {% for mentorship in mentorships %}
+                <div class="col-md-6">
+                    <div class="card shadow-sm">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center mb-3">
+                                <div class="flex-shrink-0">
+                                    <div class="bg-primary bg-opacity-10 rounded-circle p-3">
+                                        <i class="fas fa-user-tie fs-4 text-primary"></i>
+                                    </div>
+                                </div>
+                                <div class="flex-grow-1 ms-3">
+                                    <h3 class="card-title h5 mb-0">{{ mentorship.mentor.username }}</h3>
+                                    <p class="text-primary mb-0">{{ mentorship.mentor.mentor_profile.expertise }}</p>
+                                </div>
+                            </div>
+                            
+                            <p class="card-text">{{ mentorship.mentor.mentor_profile.bio|truncatechars:100 }}</p>
+                            
+                            <div class="d-flex justify-content-between">
+                                <a href="{% url 'mentor_profile' mentorship.mentor.id %}" class="btn btn-sm btn-outline-primary">View Profile</a>
+                                
+                                <div class="dropdown">
+                                    <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" id="mentorshipActions{{ mentorship.id }}" data-bs-toggle="dropdown" aria-expanded="false">
+                                        Actions
+                                    </button>
+                                    <ul class="dropdown-menu" aria-labelledby="mentorshipActions{{ mentorship.id }}">
+                                        <li><a class="dropdown-item" href="{% url 'submit_review' mentorship.mentor.id %}">Write Review</a></li>
+                                        <li><hr class="dropdown-divider"></li>
+                                        <li><a class="dropdown-item text-danger" href="{% url 'end_mentorship' mentorship.id %}" onclick="return confirm('Are you sure you want to end this mentorship?')">End Mentorship</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="card shadow-sm">
+            <div class="card-body text-center py-5">
+                <div class="mb-3">
+                    <i class="fas fa-user-friends fa-3x text-muted"></i>
+                </div>
+                <h3 class="h5 text-muted">You don't have any mentors yet</h3>
+                <p class="text-muted mb-4">Connect with mentors to receive personalized mental health support.</p>
+                <a href="{% url 'browse_mentors' %}" class="btn btn-purple">Find Mentors</a>
+            </div>
+        </div>
+    {% endif %}
+    
+    <!-- Recommended Mentors -->
+    <h2 class="h4 text-purple mt-5 mb-4">Recommended Mentors</h2>
+    
+    <div class="row g-4">
+        {% if recommended_mentors %}
+            {% for mentor_profile in recommended_mentors %}
+                <div class="col-md-4">
+                    <div class="card h-100 shadow-sm mentor-card">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center mb-3">
+                                <div class="flex-shrink-0">
+                                    <div class="bg-primary bg-opacity-10 rounded-circle p-3">
+                                        <i class="fas fa-user-tie fs-4 text-primary"></i>
+                                    </div>
+                                </div>
+                                <div class="flex-grow-1 ms-3">
+                                    <h3 class="card-title h5 mb-0">{{ mentor_profile.user.username }}</h3>
+                                    <p class="text-primary mb-0">{{ mentor_profile.expertise }}</p>
+                                </div>
+                            </div>
+                            
+                            <p class="card-text">{{ mentor_profile.bio|truncatechars:100 }}</p>
+                            
+                            <div class="d-grid gap-2">
+                                <a href="{% url 'mentor_profile' mentor_profile.user.id %}" class="btn btn-sm btn-outline-primary">View Profile</a>
+                                <a href="{% url 'select_mentor' mentor_profile.user.id %}" class="btn btn-sm btn-purple">Connect</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <div class="col-12">
+                <div class="card shadow-sm">
+                    <div class="card-body text-center py-4">
+                        <p class="text-muted mb-0">No recommended mentors available at the moment.</p>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
