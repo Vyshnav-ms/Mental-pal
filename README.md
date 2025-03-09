@@ -89,3 +89,5 @@ Database Issues: Delete db.sqlite3 and re-run migrations if needed.
 404 Errors: Verify URLs in core/urls.py match view names.
 
 
+This repository is for viewing only. Cloning or using this code without permission is prohibited.
+
