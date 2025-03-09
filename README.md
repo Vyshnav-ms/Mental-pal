@@ -2,6 +2,9 @@
 
 MentalPal is a web application built with Django that connects students with mentors for mental health support. It includes features like mentor selection, messaging, dashboards, and reviews.
 
+![MentalPal Dashboard](static/images/dashboard.png)
+
+
 ## Prerequisites
 
 - **Python**: 3.13.1 (or compatible version)
