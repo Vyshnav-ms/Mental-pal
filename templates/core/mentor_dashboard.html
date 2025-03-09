@@ -7,72 +7,39 @@
 <section class="py-5 container">
     <div class="row justify-content-center">
         <div class="col-lg-10 col-md-12">
-            <h1 class="fw-bold text-center mb-4 text-purple animate__animated animate__fadeIn">
+            <!-- Header -->
+            <h1 class="display-5 fw-bold text-center mb-3 text-primary animate__animated animate__fadeIn">
                 Welcome, {{ request.user.username }}!
             </h1>
-            <p class="text-center text-muted mb-5">Your Mentor Dashboard</p>
+            <p class="text-center text-secondary mb-5 fs-5">Your Mentor Dashboard</p>
 
-            <!-- Mentorships Section -->
-            <div class="card shadow-sm mb-4">
-                <div class="card-body">
-                    <h2 class="h4 text-primary mb-3">Active Mentorships</h2>
-                    {% if mentorships %}
-                        <ul class="list-group list-group-flush">
-                            {% for mentorship in mentorships %}
-                                <li class="list-group-item d-flex justify-content-between align-items-center">
-                                    <div>
-                                        <strong>Student:</strong> {{ mentorship.student.username }} <br>
-                                        <small>Started: {{ mentorship.created_at|date:"F j, Y" }}</small>
-                                    </div>
-                                    <a href="{% url 'end_mentorship' mentorship_id=mentorship.id %}" class="btn btn-danger btn-sm">
-                                        End Mentorship
-                                    </a>
-                                </li>
-                            {% endfor %}
-                        </ul>
-                    {% else %}
-                        <p class="text-muted">You currently have no active mentorships.</p>
-                    {% endif %}
-                </div>
-            </div>
-
-            <!-- Reviews Section -->
-            <div class="card shadow-sm">
-                <div class="card-body">
-                    <h2 class="h4 text-primary mb-3">Your Reviews</h2>
-                    {% if reviews %}
-                        {% for review in reviews %}
-                            <div class="border-bottom py-3">
-                                <p><strong>Rating:</strong> {{ review.rating }}/5</p>
-                                <p>{{ review.comment }}</p>
-                                <small class="text-muted">
-                                    By {{ review.student.username }} on {{ review.created_at|date:"F j, Y" }}
-                                </small>
+            <!-- Dashboard Overview -->
+            <div class="row g-4 mb-5">
+                <div class="col-md-4">
+                    <div class="card border-0 shadow h-100 transition-hover">
+                        <div class="card-body text-center">
+                            <div class="d-flex align-items-center justify-content-center mb-3">
+                                <div class="rounded-circle bg-primary bg-opacity-10 p-3 me-2">
+                                    <i class="fas fa-users fa-2x text-primary"></i>
+                                </div>
+                                <h3 class="h5 fw-semibold text-dark mb-0">Mentees</h3>
                             </div>
-                        {% endfor %}
-                    {% else %}
-                        <p class="text-muted">You have no reviews yet.</p>
-                    {% endif %}
-                </div>
-            </div>
-
-            <!-- Quick Stats -->
-            <div class="row g-4 mt-4">
-                <div class="col-md-6">
-                    <div class="card shadow-sm text-center">
-                        <div class="card-body">
-                            <h3 class="h5 text-primary">Total Mentees</h3>
-                            <p class="display-6">{{ mentorships.count }}</p>
+                            <p class="display-6 fw-bold text-primary">{{ mentorships.count }}</p>
                         </div>
                     </div>
                 </div>
-                <div class="col-md-6">
-                    <div class="card shadow-sm text-center">
-                        <div class="card-body">
-                            <h3 class="h5 text-primary">Average Rating</h3>
-                            <p class="display-6">
-                                {% if reviews %}
-                                    {{ reviews.aggregate(Avg('rating')).rating__avg|floatformat:1 }}/5
+                <div class="col-md-4">
+                    <div class="card border-0 shadow h-100 transition-hover">
+                        <div class="card-body text-center">
+                            <div class="d-flex align-items-center justify-content-center mb-3">
+                                <div class="rounded-circle bg-success bg-opacity-10 p-3 me-2">
+                                    <i class="fas fa-star fa-2x text-success"></i>
+                                </div>
+                                <h3 class="h5 fw-semibold text-dark mb-0">Average Rating</h3>
+                            </div>
+                            <p class="display-6 fw-bold text-success">
+                                {% if avg_rating %}
+                                    {{ avg_rating|floatformat:1 }}/5
                                 {% else %}
                                     N/A
                                 {% endif %}
@@ -80,8 +47,100 @@
                         </div>
                     </div>
                 </div>
+                <div class="col-md-4">
+                    <div class="card border-0 shadow h-100 transition-hover">
+                        <div class="card-body text-center">
+                            <div class="d-flex align-items-center justify-content-center mb-3">
+                                <div class="rounded-circle bg-info bg-opacity-10 p-3 me-2">
+                                    <i class="fas fa-envelope fa-2x text-info"></i>
+                                </div>
+                                <h3 class="h5 fw-semibold text-dark mb-0">Inbox</h3>
+                            </div>
+                            <a href="{% url 'inbox' %}" class="btn btn-outline-info btn-sm fw-medium">View Messages</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Mentorships Section -->
+            <div class="card border-0 shadow mb-5 transition-hover">
+                <div class="card-body">
+                    <h2 class="h4 fw-semibold text-primary mb-4">Active Mentorships</h2>
+                    {% if mentorships %}
+                        <ul class="list-group list-group-flush">
+                            {% for mentorship in mentorships %}
+                                <li class="list-group-item bg-light rounded mb-2 d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <strong class="text-dark">Student:</strong> 
+                                        <span class="text-primary">{{ mentorship.student.username }}</span> <br>
+                                        <small class="text-muted">Started: {{ mentorship.created_at|date:"F j, Y" }}</small>
+                                    </div>
+                                    <div class="d-flex gap-2">
+                                        <a href="{% url 'chat' mentorship_id=mentorship.id %}" class="btn btn-outline-primary btn-sm fw-medium">Message</a>
+                                        <a href="{% url 'end_mentorship' mentorship_id=mentorship.id %}" class="btn btn-outline-danger btn-sm fw-medium">End Mentorship</a>
+                                    </div>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <p class="text-muted fs-5 text-center py-3">You currently have no active mentorships.</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Reviews Section -->
+            <div class="card border-0 shadow transition-hover">
+                <div class="card-body">
+                    <h2 class="h4 fw-semibold text-primary mb-4">Your Reviews</h2>
+                    {% if reviews %}
+                        {% for review in reviews %}
+                            <div class="border-bottom py-3">
+                                <p class="mb-1">
+                                    <strong class="text-dark">Rating:</strong> 
+                                    <span class="text-warning fw-bold">{{ review.rating }}/5</span>
+                                </p>
+                                <p class="text-secondary">{{ review.comment }}</p>
+                                <small class="text-muted">
+                                    By {{ review.student.username }} on {{ review.created_at|date:"F j, Y" }}
+                                </small>
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        <p class="text-muted fs-5 text-center py-3">You have no reviews yet.</p>
+                    {% endif %}
+                </div>
             </div>
         </div>
     </div>
 </section>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Custom styles for hover effects and transitions */
+    .transition-hover {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .transition-hover:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15) !important;
+    }
+    .list-group-item {
+        transition: background-color 0.2s ease;
+    }
+    .list-group-item:hover {
+        background-color: #f8f9fa !important;
+    }
+    .btn-outline-primary, .btn-outline-danger {
+        transition: background-color 0.2s ease, color 0.2s ease;
+    }
+    .btn-outline-primary:hover {
+        background-color: #0d6efd;
+        color: white;
+    }
+    .btn-outline-danger:hover {
+        background-color: #dc3545;
+        color: white;
+    }
+</style>
 {% endblock %}

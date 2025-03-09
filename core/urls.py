@@ -27,4 +27,7 @@ urlpatterns = [
     
     # Mentorship management
     path('mentorship/<int:mentorship_id>/end/', views.end_mentorship, name='end_mentorship'),
+    
+    path('inbox/', views.inbox, name='inbox'),  # Inbox view
+    path('chat/<int:mentorship_id>/', views.chat, name='chat'),  # Chat view
 ]

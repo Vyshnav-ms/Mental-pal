@@ -3,7 +3,7 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.core.exceptions import ValidationError
-from .models import User, MentorProfile, StudentProfile, Review
+from .models import User, MentorProfile, StudentProfile, Review, Message
 
 class StudentRegistrationForm(UserCreationForm):
     """Form for student registration"""
@@ -36,14 +36,20 @@ class StudentRegistrationForm(UserCreationForm):
 
 class MentorRegistrationForm(UserCreationForm):
     """Form for mentor registration"""
-    email = forms.EmailField(required=True)
-    expertise = forms.CharField(max_length=100)
-    bio = forms.CharField(widget=forms.Textarea)
-    gender = forms.ChoiceField(choices=MentorProfile.GENDER_CHOICES)
+    email = forms.EmailField(required=True, widget=forms.EmailInput(attrs={'class': 'form-control'}))
+    expertise = forms.CharField(max_length=100, widget=forms.TextInput(attrs={'class': 'form-control'}))
+    bio = forms.CharField(widget=forms.Textarea(attrs={'class': 'form-control', 'rows': 4}))
+    gender = forms.ChoiceField(choices=MentorProfile.GENDER_CHOICES, widget=forms.Select(attrs={'class': 'form-control'}))
     
     class Meta:
         model = User
         fields = ('username', 'email', 'password1', 'password2')
+        widgets = {
+            'username': forms.TextInput(attrs={'class': 'form-control'}),
+            'email': forms.EmailInput(attrs={'class': 'form-control'}),
+            'password1': forms.PasswordInput(attrs={'class': 'form-control'}),
+            'password2': forms.PasswordInput(attrs={'class': 'form-control'}),
+        }
     
     def save(self, commit=True):
         user = super().save(commit=False)
@@ -96,3 +102,33 @@ class MentorFilterForm(forms.Form):
         ('2', '2+ Stars'),
         ('1', '1+ Stars')
     ], widget=forms.Select(attrs={'class': 'form-select'}))
+
+
+
+class ReviewForm(forms.ModelForm):
+    rating = forms.ChoiceField(
+        choices=[(i, str(i)) for i in range(1, 6)],  # Options: 1, 2, 3, 4, 5
+        widget=forms.RadioSelect,  # No extra attrs here; we’ll style in CSS
+        label='Rating'
+    )
+    
+    class Meta:
+        model = Review
+        fields = ['rating', 'comment']
+        widgets = {
+            'comment': forms.Textarea(attrs={'rows': 4, 'class': 'form-control', 'placeholder': 'Write your comment here...'}),
+        }
+        labels = {
+            'comment': 'Comment',
+        }
+
+class MessageForm(forms.ModelForm):
+    class Meta:
+        model = Message
+        fields = ['content']
+        widgets = {
+            'content': forms.Textarea(attrs={'rows': 3, 'class': 'form-control', 'placeholder': 'Type your message...'}),
+        }
+        labels = {
+            'content': '',
+        }

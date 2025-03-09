@@ -1,5 +1,5 @@
-<!-- templates/core/student_dashboard.html -->
 {% extends 'core/base.html' %}
+{% load static %}
 
 {% block title %}Student Dashboard - MentalPal{% endblock %}
 
@@ -44,12 +44,12 @@
                 <div class="card-body">
                     <div class="d-flex align-items-center mb-3">
                         <div class="rounded-circle bg-info bg-opacity-10 p-3 me-3">
-                            <i class="fas fa-user-cog fs-4 text-info"></i>
+                            <i class="fas fa-envelope fs-4 text-info"></i> <!-- Changed icon to envelope -->
                         </div>
-                        <h2 class="h5 mb-0">My Profile</h2>
+                        <h2 class="h5 mb-0">Inbox</h2> <!-- Changed to Inbox -->
                     </div>
-                    <p class="text-muted">Update your personal information and preferences.</p>
-                    <a href="#" class="btn btn-sm btn-outline-info">Edit Profile</a>
+                    <p class="text-muted">Chat with your mentors directly.</p>
+                    <a href="{% url 'inbox' %}" class="btn btn-sm btn-outline-info">View Messages</a>
                 </div>
             </div>
         </div>
@@ -86,6 +86,7 @@
                                         Actions
                                     </button>
                                     <ul class="dropdown-menu" aria-labelledby="mentorshipActions{{ mentorship.id }}">
+                                        <li><a class="dropdown-item" href="{% url 'chat' mentorship_id=mentorship.id %}">Message</a></li> <!-- Added Message option -->
                                         <li><a class="dropdown-item" href="{% url 'submit_review' mentorship.mentor.id %}">Write Review</a></li>
                                         <li><hr class="dropdown-divider"></li>
                                         <li><a class="dropdown-item text-danger" href="{% url 'end_mentorship' mentorship.id %}" onclick="return confirm('Are you sure you want to end this mentorship?')">End Mentorship</a></li>

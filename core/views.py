@@ -5,10 +5,10 @@ from django.contrib import messages
 from django.db.models import Avg
 from django.http import HttpResponseForbidden
 
-from .models import StudentProfile, User, MentorProfile, Mentorship, FAQ, Review
+from .models import User, MentorProfile, StudentProfile, Mentorship, FAQ, Review, Message
 from .forms import (
     StudentRegistrationForm, MentorRegistrationForm, LoginForm, 
-    ReviewForm, MentorFilterForm
+    ReviewForm, MentorFilterForm, MessageForm
 )
 
 def home(request):
@@ -48,23 +48,14 @@ def register_mentor(request):
     if request.method == 'POST':
         form = MentorRegistrationForm(request.POST)
         if form.is_valid():
-            user = form.save(commit=False)
-            user.is_mentor = True  # Set as mentor
-            user.save()
-            
-            # Create mentor profile
-            MentorProfile.objects.create(
-                user=user,
-                expertise=form.cleaned_data['expertise'],
-                bio=form.cleaned_data['bio'],
-                gender=form.cleaned_data['gender']
-            )
-            
+            user = form.save()  # This calls the custom save method
             messages.success(request, 'Registration successful! You can now log in.')
             return redirect('login')
+        else:
+            messages.error(request, 'Registration failed. Please correct the errors below.')
+            print("Form errors:", form.errors)  # Debug output to terminal
     else:
         form = MentorRegistrationForm()
-    
     return render(request, 'core/register_mentor.html', {'form': form})
 
 def user_login(request):
@@ -120,15 +111,16 @@ def student_dashboard(request):
 
 @login_required
 def mentor_dashboard(request):
-    """Dashboard for mentors"""
+    """View for mentor dashboard"""
     if not request.user.is_mentor:
-        return HttpResponseForbidden("Access denied. Mentor account required.")
+        messages.error(request, 'Only mentors can access this page.')
+        return redirect('home')
     
-    # Get mentor's mentorships
+    # Get active mentorships
     mentorships = Mentorship.objects.filter(mentor=request.user, active=True)
     
-    # Get mentor's reviews
-    reviews = Review.objects.filter(mentor=request.user).order_by('-created_at')
+    # Get reviews for the mentor
+    reviews = Review.objects.filter(mentor=request.user)
     
     # Calculate average rating
     avg_rating = reviews.aggregate(Avg('rating'))['rating__avg'] if reviews.exists() else None
@@ -136,9 +128,8 @@ def mentor_dashboard(request):
     context = {
         'mentorships': mentorships,
         'reviews': reviews,
-        'avg_rating': avg_rating,  # Add average rating to context
+        'avg_rating': avg_rating,
     }
-    
     return render(request, 'core/mentor_dashboard.html', context)
 
 @login_required
@@ -217,24 +208,25 @@ def select_mentor(request, mentor_id):
     if not request.user.is_student:
         messages.error(request, 'Only students can select mentors.')
         return redirect('home')
-    
     mentor = get_object_or_404(User, id=mentor_id, is_mentor=True)
     
-    # Check if mentorship already exists
-    existing_mentorship = Mentorship.objects.filter(
-        student=request.user, 
-        mentor=mentor,
-        active=True
-    ).exists()
+    # Check for any existing mentorship (active or inactive)
+    mentorship = Mentorship.objects.filter(student=request.user, mentor=mentor).first()
     
-    if existing_mentorship:
-        messages.info(request, f'You are already connected with {mentor.username}.')
+    if mentorship:
+        if mentorship.active:
+            messages.info(request, f'You are already connected with {mentor.username}.')
+        else:
+            # Reactivate the existing mentorship
+            mentorship.active = True
+            mentorship.save()
+            messages.success(request, f'You have reconnected with {mentor.username}!')
     else:
+        # Create a new mentorship if none exists
         Mentorship.objects.create(student=request.user, mentor=mentor)
         messages.success(request, f'You are now connected with {mentor.username}!')
     
     return redirect('student_dashboard')
-
 @login_required
 def end_mentorship(request, mentorship_id):
     """View for ending a mentorship"""
@@ -317,3 +309,119 @@ def faq_list(request):
     }
     
     return render(request, 'core/faq.html', context)
+
+
+
+#submit review
+@login_required
+def submit_review(request, mentor_id):
+    """View for submitting a review for a mentor"""
+    if not request.user.is_student:
+        messages.error(request, 'Only students can submit reviews.')
+        return redirect('home')
+    mentor = get_object_or_404(User, id=mentor_id, is_mentor=True)
+    has_mentorship = Mentorship.objects.filter(
+        student=request.user, 
+        mentor=mentor
+    ).exists()
+    if not has_mentorship:
+        messages.error(request, 'You can only review mentors you have worked with.')
+        return redirect('browse_mentors')
+    existing_review = Review.objects.filter(
+        student=request.user,
+        mentor=mentor
+    ).first()
+    if request.method == 'POST':
+        form = ReviewForm(request.POST, instance=existing_review)
+        if form.is_valid():
+            review = form.save(commit=False)
+            if not existing_review:
+                review.student = request.user
+                review.mentor = mentor
+            review.save()
+            messages.success(request, 'Your review has been submitted!')
+            return redirect('mentor_profile', mentor_id=mentor.id)
+    else:
+        form = ReviewForm(instance=existing_review)
+    context = {
+        'form': form,
+        'mentor': mentor,
+        'is_edit': existing_review is not None
+    }
+    return render(request, 'core/submit_review.html', context)
+
+
+
+@login_required
+def inbox(request):
+    """View for displaying the user's inbox"""
+    if request.user.is_student:
+        mentorships = Mentorship.objects.filter(student=request.user, active=True)
+        other_role = 'mentor'
+    elif request.user.is_mentor:
+        mentorships = Mentorship.objects.filter(mentor=request.user, active=True)
+        other_role = 'student'
+    else:
+        return redirect('home')
+    
+    conversations = []
+    for mentorship in mentorships:
+        unread_count = Message.objects.filter(
+            mentorship=mentorship,
+            receiver=request.user,
+            is_read=False
+        ).count()
+        last_message = Message.objects.filter(mentorship=mentorship).order_by('-timestamp').first()
+        conversations.append({
+            'mentorship': mentorship,
+            'other_user': getattr(mentorship, other_role),
+            'unread_count': unread_count,
+            'last_message': last_message,
+        })
+    
+    context = {
+        'conversations': conversations,
+    }
+    return render(request, 'core/inbox.html', context)
+
+@login_required
+def chat(request, mentorship_id):
+    """View for chatting within a mentorship"""
+    mentorship = get_object_or_404(Mentorship, id=mentorship_id, active=True)
+    
+    # Check if user is part of this mentorship
+    if request.user != mentorship.student and request.user != mentorship.mentor:
+        return HttpResponseForbidden("You don't have permission to access this chat.")
+    
+    # Mark messages as read
+    Message.objects.filter(
+        mentorship=mentorship,
+        receiver=request.user,
+        is_read=False
+    ).update(is_read=True)
+    
+    # Get all messages (renamed to avoid conflict)
+    chat_messages = Message.objects.filter(mentorship=mentorship).order_by('timestamp')
+    
+    # Handle form submission
+    if request.method == 'POST':
+        form = MessageForm(request.POST)
+        if form.is_valid():
+            message = form.save(commit=False)
+            message.mentorship = mentorship
+            message.sender = request.user
+            message.receiver = mentorship.mentor if request.user.is_student else mentorship.student
+            message.save()
+            
+            messages.success(request, 'Message sent!')  # Use Django's messages framework
+            form = MessageForm()  # Clear the form after submission
+    else:
+        form = MessageForm()
+    
+    context = {
+        'mentorship': mentorship,
+        'messages': chat_messages,  # Updated name
+        'form': form,
+        'other_user': mentorship.mentor if request.user.is_student else mentorship.student,
+    }
+    return render(request, 'core/chat.html', context)

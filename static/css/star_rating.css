@@ -1,0 +1,33 @@
+.star-rating {
+    display: flex;          /* Horizontal layout */
+    flex-direction: row-reverse; /* Right-to-left for hover effect */
+    justify-content: flex-end;  /* Align stars to the right initially */
+    gap: 5px;              /* Space between stars */
+}
+
+.star-rating input[type="radio"] {
+    display: none;         /* Hide radio buttons */
+}
+
+.star-rating label {
+    font-size: 2rem;       /* Star size */
+    color: #ddd;           /* Default gray color */
+    cursor: pointer;
+    margin: 0;             /* Remove default margins */
+    padding: 0;            /* Remove padding */
+}
+
+.star-rating label:before {
+    content: '★';          /* Unicode star */
+}
+
+/* Fill stars when selected */
+.star-rating input[type="radio"]:checked ~ label {
+    color: #f5c518;        /* Gold color for selected stars */
+}
+
+/* Hover effect: fill stars to the left when hovering */
+.star-rating label:hover,
+.star-rating label:hover ~ label {
+    color: #f5c518;        /* Gold on hover */
+}

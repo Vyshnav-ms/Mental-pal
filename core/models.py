@@ -85,3 +85,18 @@ class Review(models.Model):
     
     class Meta:
         unique_together = ('student', 'mentor')
+
+
+class Message(models.Model):
+    mentorship = models.ForeignKey(Mentorship, on_delete=models.CASCADE, related_name='messages')
+    sender = models.ForeignKey(User, on_delete=models.CASCADE, related_name='sent_messages')
+    receiver = models.ForeignKey(User, on_delete=models.CASCADE, related_name='received_messages')
+    content = models.TextField()
+    timestamp = models.DateTimeField(auto_now_add=True)
+    is_read = models.BooleanField(default=False)
+    
+    def __str__(self):
+        return f"From {self.sender.username} to {self.receiver.username} at {self.timestamp}"
+    
+    class Meta:
+        ordering = ['timestamp']
